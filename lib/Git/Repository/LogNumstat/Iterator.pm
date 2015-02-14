@@ -13,13 +13,21 @@ use Git::Repository::LogNumstat;
 sub new {
   my $class = shift;
   my @opt = grep /^--(diffstat|numstat)$/, @_;
-  my ($reverse) = grep /^--reverse$/, @_;
   my @cmd = ((@opt && $opt[-1] eq '--diffstat'? '-p' : '--numstat'),
              grep !/^--(diffstat|numstat)$/, @_);
   my $self = $class->SUPER::new(@cmd);
-  $self->{_numstat} = $cmd[0] eq '--numstat';
-  $self->{_reverse} = $reverse;
+  $self->{numstat} = $cmd[0] eq '--numstat';
   $self;
+}
+
+sub encoding {
+  my $self = shift;
+  if (@_) {
+    ($self->{encoding} = shift) =~ s/^://;
+    binmode $self->{fh}, ":$self->{encoding}";
+  } else {
+    $self->{encoding};
+  }
 }
 
 sub next {
@@ -61,6 +69,10 @@ L<Git::Repository::LogNumstat> objects represening each log and numstat item.
 =head2 new
 
     my $iter = Git::Repository::LogNumstat::Iterator->new( @args );
+
+=head2 encoding
+
+    $iter->encoding('utf8');
 
 =head2 next
 

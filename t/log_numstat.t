@@ -56,6 +56,9 @@ $ENV{GIT_COMMITTER_NAME}  = 'Committer Example';
     $r->run(commit => -m => "renames $f $g");
   }
 
+  $r->run(tag => 'RELENG');
+  $r->run(bundle => create => $test_bundle => HEAD => '--all');
+
   my $self = Git::Repository->new(git_dir => $r->git_dir);
   is ref $self, 'Git::Repository' or diag $self;
 
@@ -78,9 +81,8 @@ $ENV{GIT_COMMITTER_NAME}  = 'Committer Example';
 
   my %tree2;
   {
-    my $iterator = $self->log_numstat(qw/ -C --reverse --diffstat /);
-    is ref $iterator, 'Git::Repository::LogNumstat::Iterator' or diag $iterator;
-    while (my $log = $iterator->next) {
+    my @iterator = $self->log_numstat(qw/ -C --reverse --diffstat /);
+    for my $log (@iterator) {
       is ref $log, 'Git::Repository::Log' or diag ref $log;
       can_ok($log, qw/commit numstat/);
       for ($log->numstat) {
@@ -95,8 +97,6 @@ $ENV{GIT_COMMITTER_NAME}  = 'Committer Example';
   # diag explain \%tree1;
 
   is_deeply \%tree1, \%tree2 or diag explain [ \%tree1, \%tree2 ];
-  $r->run(tag => 'RELENG');
-  $r->run(bundle => create => $test_bundle => HEAD => '--all');
 }
 
 unlink $test_bundle;

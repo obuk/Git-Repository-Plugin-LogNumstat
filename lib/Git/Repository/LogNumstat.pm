@@ -31,14 +31,9 @@ sub new {
     my $subr = (ref $log) . '::numstat';
     *$subr = sub { @{ $_[0]->{numstat} || [] } };
   }
-  unless ($log->can('_numstat')) {
-    no strict 'refs';
-    my $subr = (ref $log) . '::_numstat';
-    *$subr = sub { $_[0]->{_numstat} };
-  }
   my @numstat;
-  if ($log->{_numstat} = $iterator->{_numstat}) {
-    for (split /\n/, decode_utf8($log->extra)) {
+  if ($iterator->{numstat}) {
+    for (split /\n/, $log->extra) {
       next unless my ($added, $deleted, $path) =
         /^
          (\d+) \s+                # added
@@ -59,7 +54,7 @@ sub new {
     }
   } else {
     my %from = (); my $re_rename = qr/(?:rename|copy)/;
-    for (split /diff --git [^\n]+\n/, decode_utf8($log->extra)) {
+    for (split /diff --git [^\n]+\n/, $log->extra) {
       if (/
             similarity \s index \s \d+\%    \n
             $re_rename \s from  \s ([^\n]+) \n
@@ -70,11 +65,11 @@ sub new {
     }
     my $pid = open2(my $diffstat, my $diff, qw/diffstat -p1 -f0/);
     croak "can't run diffstat" unless $pid;
-    # binmode($diff, ":encoding(UTF-8)");
-    # print $diff decode_utf8($log->extra);
+    if (my $enc = $iterator->encoding) {
+      binmode $_, ":$enc" for $diff, $diffstat;
+    }
     print $diff $log->extra;
     close $diff;
-    binmode($diffstat, ":encoding(UTF-8)");
     while (<$diffstat>) {
       chop;
       next unless my ($path, $added, $deleted, $changed) =
