@@ -3,6 +3,7 @@ package Git::Repository::LogNumstat::Iterator;
 use strict;
 use warnings;
 use 5.006;
+use Carp;
 
 use Git::Repository::Log::Iterator;
 our @ISA = qw( Git::Repository::Log::Iterator );
@@ -12,11 +13,27 @@ use Git::Repository::LogNumstat;
 
 sub new {
   my $class = shift;
-  my @opt = grep /^--(diffstat|numstat)$/, @_;
-  my @cmd = ((@opt && $opt[-1] eq '--diffstat'? '-p' : '--numstat'),
-             grep !/^--(diffstat|numstat)$/, @_);
-  my $self = $class->SUPER::new(@cmd);
-  $self->{numstat} = $cmd[0] eq '--numstat';
+  my @git = @_ && ref $_[0] && shift || ();
+  my $enc = @_ && $_[0] =~ /^:/ && shift || '';
+  my $numstat = qw/--numstat/;
+  my @opt = ();
+  while (my $opt = shift) {
+    if ($opt eq '--') {
+      unshift @_, $opt;
+      last;
+    } elsif ($opt eq '--numstat') {
+      $numstat = $opt;
+    } elsif ($opt eq '--diffstat') {
+      $numstat = '-p';
+    } else {
+      push @opt, $opt;
+    }
+  }
+  my @badopt = grep /^--(dir|short|patch-with-)?stat$/, @opt;
+  croak "log_numstat() cannot handle @badopt" if @badopt;
+  my $self = $class->SUPER::new(@git, @opt, $numstat, @_);
+  $self->{numstat} = $numstat eq '--numstat';
+  $self->encoding($enc) if $enc;
   $self;
 }
 
@@ -39,9 +56,11 @@ sub next {
 
 1;
 
-# ABSTRACT: Split a git log --numstat stream into records
-
 =pod
+
+=head1 NAME
+
+Git::Repository::LogNumstat::Iterator - Split a git log --numstat stream into records
 
 =head1 SYNOPSIS
 

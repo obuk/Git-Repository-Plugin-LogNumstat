@@ -1,5 +1,14 @@
-Revision history for Git-Repository-Plugin-NumStat
+Revision history for Git-NumStat
 
-0.0.1  Sat Feb  7 11:07:57 2015
-       Initial release.
+Git Log:
+2015-02-15 - (HEAD, tag: 0.02, master) fixes bug handling arguments
 
+Coverage Summary:
+---------------------------- ------ ------ ------ ------ ------ ------ ------
+File                           stmt   bran   cond    sub    pod   time  total
+---------------------------- ------ ------ ------ ------ ------ ------ ------
+.../Repository/LogNumstat.pm  100.0  100.0    n/a  100.0  100.0   21.2  100.0
+...ry/LogNumstat/Iterator.pm  100.0  100.0   80.0  100.0  100.0   37.3   98.7
+...tory/Plugin/LogNumstat.pm  100.0  100.0    n/a  100.0  100.0   41.3  100.0
+Total                         100.0  100.0   80.0  100.0  100.0  100.0   99.5
+---------------------------- ------ ------ ------ ------ ------ ------ ------

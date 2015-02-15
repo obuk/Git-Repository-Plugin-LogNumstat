@@ -13,6 +13,7 @@ WriteMakefile(
         'version'    => 0,
 	'Test::Output' => 0,
 	'Test::Git' => 0,
+	'File::Copy' => 0,
 	'File::Spec::Functions' => 0,
 	'Git::Repository' => 0,
 	'Git::Repository::Plugin::Log' => 0,

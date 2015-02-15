@@ -15,9 +15,9 @@ use Git::Repository::Plugin::LogNumstat;
 use IPC::Open2;
 use Encode;
 
-sub added   {    $_[0]->{added}           }
-sub deleted {    $_[0]->{deleted}         }
-sub path    { @{ $_[0]->{path}    || [] } }
+sub added   {    $_[0]->{added}     }
+sub deleted {    $_[0]->{deleted}   }
+sub path    { @{ $_[0]->{path}    } }
 
 sub _numstat {
   my ($class, $added, $deleted) = splice(@_, 0, 3);
@@ -29,7 +29,7 @@ sub new {
   unless ($log->can('numstat')) {
     no strict 'refs';
     my $subr = (ref $log) . '::numstat';
-    *$subr = sub { @{ $_[0]->{numstat} || [] } };
+    *$subr = sub { @{ $_[0]->{numstat} } };
   }
   my @numstat;
   if ($iterator->{numstat}) {
@@ -64,7 +64,6 @@ sub new {
       }
     }
     my $pid = open2(my $diffstat, my $diff, qw/diffstat -p1 -f0/);
-    croak "can't run diffstat" unless $pid;
     if (my $enc = $iterator->encoding) {
       binmode $_, ":$enc" for $diff, $diffstat;
     }
