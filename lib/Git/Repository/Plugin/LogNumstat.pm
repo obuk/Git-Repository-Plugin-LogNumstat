@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use 5.006;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Git::Repository::Plugin;
 our @ISA = qw( Git::Repository::Plugin );
