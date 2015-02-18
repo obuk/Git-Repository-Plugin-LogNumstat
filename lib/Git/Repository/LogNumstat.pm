@@ -26,6 +26,9 @@ sub _numstat {
 
 sub new {
   my ($class, $iterator, $log) = @_;
+  if ($log->{numstat}) {
+    return @{$log->{numstat}};
+  }
   unless ($log->can('numstat')) {
     no strict 'refs';
     my $subr = (ref $log) . '::numstat';
@@ -98,6 +101,7 @@ sub new {
     close $diffstat;
     waitpid($pid, 0);
   }
+  $log->{numstat} = \@numstat;
   @numstat;
 }
 

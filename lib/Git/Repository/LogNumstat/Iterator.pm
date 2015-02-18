@@ -50,6 +50,7 @@ sub encoding {
 sub next {
   my $self = shift;
   return unless my $log = $self->SUPER::next(@_);
+  $log->{numstat} = undef;
   $log->{numstat} = [Git::Repository::LogNumstat->new($self, $log)];
   $log;
 }
