@@ -157,7 +157,7 @@ sub can_run {
       diag join ' ' => ('log_numstat()', @$opts, '...', 'ignored');
       next;
     }
-    my %tree;
+    my %tree; my %tree2;
     my $iterator = $self->log_numstat(@$opts);
     is ref $iterator, 'Git::Repository::LogNumstat::Iterator' or diag $iterator;
     # diag join ' ' => @{$iterator->{cmd}{cmdline}};
@@ -177,6 +177,15 @@ sub can_run {
         }
         $tree{$p[-1]} += $_->added - $_->deleted;
       }
+      for ($log->numstat) {
+        my @p = $_->path;
+        if (@p > 1) {
+          $tree2{$p[1]} = $tree2{$p[0]};
+          delete $tree2{$p[0]} unless $_->added || $_->deleted;
+        }
+        $tree2{$p[-1]} += $_->added - $_->deleted;
+      }
+      is_deeply \%tree2, \%tree;
     }
     my $d;
     is $tree{'b.yml'}, 103 or $d++;
