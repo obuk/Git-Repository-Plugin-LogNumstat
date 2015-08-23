@@ -1,4 +1,4 @@
-Git-Repository-Plugin-LogNumstat-.*
+Git-Repository-Plugin-Log-Numstat-.*
 Makefile$
 \.bak$
 \.bundle$
@@ -14,6 +14,7 @@ Makefile$
 ^\.git
 ^blib
 ^cover_db
+^eg/
 ^files/
 ^pm_to_blib$
 ^script/

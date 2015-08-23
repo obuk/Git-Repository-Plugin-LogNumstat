@@ -1,0 +1,13 @@
+requires 'Config';
+requires 'Cwd';
+requires 'File::Copy';
+requires 'File::Spec::Functions';
+requires 'Git::Repository';
+requires 'Git::Repository::Plugin::Log';
+requires 'Hook::WrapSub';
+requires 'Test::Exception';
+requires 'Test::Git';
+requires 'Test::Output';
+requires 'YAML';
+requires 'Test::More';
+requires 'version';
